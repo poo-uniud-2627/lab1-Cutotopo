@@ -25,10 +25,26 @@ public class Punteggio {
     private int puntiDestra;
     private int puntiSinistra;
     private List<Lato> storia;
+    
+    public boolean repOK() {
+        int[] lr = new int[Lato.values().length];
+        for (Lato lato : this.storia) {
+            if (lato == null) {
+                return false;
+            }
+            lr[lato.ordinal()]++;
+        }
+
+        return this.puntiSinistra >= 0 && this.puntiSinistra == lr[0] &&
+               this.puntiDestra >= 0 && this.puntiDestra == lr[1] &&
+               this.puntiVittoria >= 0 && this.scarto >= 0;
+    }
+
     /**
      * Una partita nuova, 0 a 0, con la sua regola per vincere.
-     * Pretende: puntiPerVincere è almeno 1; scartoMinimo è almeno 1.
+     * Pretende: niente
      * Promette: una partita 0 a 0, non finita, senza vincitore e con la storia vuota.
+     * Lancia: `IllegalArgumentException` se `puntiPerVincere` è minore di 1 o `scartoMinimo` è minore di 1.
      */
     public Punteggio(int puntiPerVincere, int scartoMinimo) {
        if(puntiPerVincere >= 1 && scartoMinimo >=1) {
@@ -45,13 +61,17 @@ public class Punteggio {
 
     /**
      * Il lato chi ha fatto un punto.
-     * Pretende: chi non è null.
+     * Pretende: niente
      * Promette: se la partita non era finita, il lato chi ha un punto in più, l'altro lato non
      *           cambia e il punto si aggiunge in fondo alla storia; se con questo punto il lato chi
      *           vince (regola in cima alla classe), la partita è finita e il vincitore è chi.
      *           Se la partita era già finita, non cambia niente.
+     * Lancia: Se `chi` è null lancia `IllegalArgumentException`, anche a partita finita, e non cambia niente.
      */
     public void segnaPunto(Lato chi) {
+        if (chi == null) {
+            throw new IllegalArgumentException("chi cannot be null");
+        }
         if(isFinita())
             return;
         
@@ -64,10 +84,14 @@ public class Punteggio {
     }
 
     /**
-     * Pretende: chi non è null.
+     * Pretende: niente
      * Promette: i punti del lato chi. Non cambia niente.
+     * Lancia: `IllegalArgumentException` se `chi` è null.
      */
     public int getPunti(Lato chi) {
+        if (chi == null) {
+            throw new IllegalArgumentException("chi cannot be null");
+        }
         if(chi == Lato.DESTRA)
             return puntiDestra;
         else {
